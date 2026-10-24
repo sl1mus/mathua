@@ -227,4 +227,24 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: 'Continue with Apple' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Continue with Facebook' })).toBeNull()
   })
+  it('does not offer Google when no OAuth provider is configured', async () => {
+    getConfigMock.mockResolvedValue({ auth_enabled: true, providers: [] })
+    render(<LoginPage />)
+    await waitFor(() => expect(getConfigMock).toHaveBeenCalled())
+    expect(screen.queryByRole('button', { name: 'Continue with Google' })).toBeNull()
+  })
+
+  it('keeps Google hidden when only GitHub is configured', async () => {
+    getConfigMock.mockResolvedValue({ auth_enabled: true, providers: ['github'] })
+    render(<LoginPage />)
+    expect(await screen.findByRole('button', { name: 'Continue with GitHub' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Continue with Google' })).toBeNull()
+  })
+
+  it('offers Google when its redirect provider is configured', async () => {
+    getConfigMock.mockResolvedValue({ auth_enabled: true, providers: ['google'] })
+    render(<LoginPage />)
+    expect(await screen.findByRole('button', { name: 'Continue with Google' })).toBeInTheDocument()
+  })
+
 })

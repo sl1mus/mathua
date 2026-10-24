@@ -175,6 +175,7 @@ def _numerical_check(ee, ea, num_points: int = 10) -> tuple[bool, str]:
     if not free_symbols:
         return ee == ea, "Not equivalent"
 
+    valid_points = 0
     for _ in range(num_points):
         subs = {}
         for sym in free_symbols:
@@ -190,11 +191,14 @@ def _numerical_check(ee, ea, num_points: int = 10) -> tuple[bool, str]:
             if not (abs(ee_val) < 1e10 and abs(ea_val) < 1e10):
                 continue
 
+            valid_points += 1
             if abs(ee_val - ea_val) > 1e-6:
                 return False, "Not equivalent"
         except Exception as ex:
             continue
 
+    if valid_points < 3:
+        return False, "Insufficient valid comparison points"
     return True, ""
 
 
