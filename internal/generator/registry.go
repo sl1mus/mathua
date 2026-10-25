@@ -131,6 +131,7 @@ func (r *Registry) GenerateContext(conceptID string, ctx GeneratorContext) (Prob
 	p := booleanChoices(gen.Generate(ctx))
 	p.Question = latex.Canonicalize(p.Question, latex.Generators)
 	p.Explanation = r.explain(conceptID, p)
+	normalizeLocalizations(&p)
 	p.Difficulty = difficultyOf(ctx.Difficulty)
 	p.KPOrdinal = ctx.KPOrdinal
 	if len(p.ScaffoldSteps) == 0 {
@@ -190,6 +191,7 @@ func (r *Registry) BatchGenerateContext(conceptID string, count int, ctx Generat
 		p := gen.Generate(ctx)
 		p.Question = latex.Canonicalize(p.Question, latex.Generators)
 		p.Explanation = r.explain(conceptID, p)
+		normalizeLocalizations(&p)
 		p.Difficulty = difficultyOf(ctx.Difficulty)
 		p.KPOrdinal = ctx.KPOrdinal
 		for _, w := range latex.Validate(p.Question+"\n"+p.Explanation, latex.Generators) {
@@ -278,4 +280,17 @@ func booleanChoices(p Problem) Problem {
 	q.Facts = p.Facts
 	q.Difficulty = p.Difficulty
 	return q
+}
+
+func normalizeLocalizations(p *Problem) {
+	if p.Localizations != nil {
+		for locale, text := range p.Localizations {
+			text.Question = latex.Canonicalize(text.Question, latex.Generators)
+			text.Explanation = latex.Canonicalize(text.Explanation, latex.Generators)
+			p.Localizations[locale] = text
+		}
+		// The explanation policy may replace a generator's English working.
+		// English presentation must still match the final canonical instance.
+		p.Localizations["en"] = LocalizedProblem{Question: p.Question, Explanation: p.Explanation}
+	}
 }

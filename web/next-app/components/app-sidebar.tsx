@@ -1,5 +1,10 @@
 'use client'
 
+import LanguageSwitcher from './LanguageSwitcher'
+import { useLocale } from '../hooks/useLocale'
+
+import { tr, translatedLabel } from '../lib/i18n'
+
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
@@ -63,12 +68,12 @@ interface SidebarNavItem {
 }
 
 const NAV_ITEMS: SidebarNavItem[] = [
-  { label: 'Learn', href: '/learn', icon: Play },
-  { label: 'Graph', href: '/graph', icon: Network },
-  { label: 'Domains', href: '/domains', icon: Layers },
-  { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
-  { label: 'History', href: '/history', icon: ChartNoAxesColumn },
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: "Learn", href: '/learn', icon: Play },
+  { label: "Graph", href: '/graph', icon: Network },
+  { label: "Domains", href: '/domains', icon: Layers },
+  { label: "Leaderboard", href: '/leaderboard', icon: Trophy },
+  { label: "History", href: '/history', icon: ChartNoAxesColumn },
+  { label: "Settings", href: '/settings', icon: Settings },
 ]
 
 // Resources group: docs, glossary, contributing, creator's note, how it works.
@@ -76,15 +81,15 @@ const NAV_ITEMS: SidebarNavItem[] = [
   // duplication). The glossary is a standalone reference with no progress,
   // XP or gating, so it sits here rather than beside Learn.
   const RESOURCE_ITEMS: SidebarNavItem[] = [
-    { label: 'Docs', href: '/docs', icon: FileText },
-    { label: 'Glossary', href: '/glossary', icon: BookOpen },
-    { label: 'Contribute', href: '/docs/contributing', icon: Handshake },
+    { label: "Docs", href: '/docs', icon: FileText },
+    { label: "Glossary", href: '/glossary', icon: BookOpen },
+    { label: "Contribute", href: '/docs/contributing', icon: Handshake },
     { label: "Creator's note", href: '/note', icon: Pencil },
-    { label: 'How it works', href: '/how-it-works', icon: House },
+    { label: "How it works", href: '/how-it-works', icon: House },
   ]
 
 const ADMIN_ITEM: SidebarNavItem = {
-  label: 'Admin',
+  label: "Admin",
   href: '/admin',
   icon: Shield,
 }
@@ -120,6 +125,7 @@ export function AppSidebar({
   dueReviews = 0,
   isAdmin = false,
 }: AppSidebarProps) {
+  useLocale()
   const pathname = usePathname()
   // Contact is one control, not two destinations: the page and the Discord
   // server answer different needs, so the choice belongs after the click.
@@ -157,8 +163,8 @@ export function AppSidebar({
           <button
             type="button"
             onClick={toggleSidebar}
-            aria-label="Expand sidebar"
-            title="Expand sidebar"
+            aria-label={tr("Expand sidebar")}
+            title={tr("Expand sidebar")}
             className="hidden size-11 shrink-0 flex-col items-center justify-center gap-0.5 font-mono text-sm text-mathua-blue hover:bg-sidebar-accent group-data-[collapsible=icon]:flex"
           >
             <span aria-hidden="true">λ</span>
@@ -166,7 +172,7 @@ export function AppSidebar({
           </button>
           <SidebarMenu className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild tooltip="Mathua hub">
+              <SidebarMenuButton size="lg" asChild tooltip={tr("Mathua hub")}>
                 <Link href="/profile">
                   <span className="flex size-6 shrink-0 items-center justify-center font-mono text-sm text-mathua-blue" aria-hidden="true">λ</span>
                   <span className="font-mono text-sm text-mathua-blue group-data-[collapsible=icon]:hidden">Mathua</span>
@@ -178,8 +184,8 @@ export function AppSidebar({
           <button
             type="button"
             onClick={toggleSidebar}
-            aria-label="Collapse sidebar"
-            title="Collapse sidebar"
+            aria-label={tr("Collapse sidebar")}
+            title={tr("Collapse sidebar")}
             className="flex size-8 shrink-0 items-center justify-center text-mathua-muted hover:bg-sidebar-accent hover:text-mathua-blue group-data-[collapsible=icon]:hidden"
           >
             <ChevronsLeft />
@@ -189,7 +195,7 @@ export function AppSidebar({
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigate</SidebarGroupLabel>
+          <SidebarGroupLabel>{tr("Navigate")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {/* Admin last, and only for an administrator. Last because it is a different
@@ -201,16 +207,16 @@ export function AppSidebar({
                 const Icon = item.icon
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+                    <SidebarMenuButton asChild isActive={active} tooltip={translatedLabel(item.label)}>
                       {item.href.startsWith('http') ? (
                         <a href={item.href} target="_blank" rel="noreferrer">
                           <Icon className="shrink-0" />
-                          <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                          <span className="group-data-[collapsible=icon]:hidden">{translatedLabel(item.label)}</span>
                         </a>
                       ) : (
                         <Link href={item.href}>
                           <Icon className="shrink-0" />
-                          <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                          <span className="group-data-[collapsible=icon]:hidden">{translatedLabel(item.label)}</span>
                         </Link>
                       )}
                     </SidebarMenuButton>
@@ -224,7 +230,7 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarGroupLabel>{tr("Resources")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {RESOURCE_ITEMS.map((item) => {
@@ -232,10 +238,10 @@ export function AppSidebar({
                 const Icon = item.icon
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+                    <SidebarMenuButton asChild isActive={active} tooltip={translatedLabel(item.label)}>
                       <Link href={item.href}>
                         <Icon className="shrink-0" />
-                        <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                        <span className="group-data-[collapsible=icon]:hidden">{translatedLabel(item.label)}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -245,12 +251,12 @@ export function AppSidebar({
                 <SidebarMenuButton
                   type="button"
                   isActive={pathname === '/contact'}
-                  tooltip="Contact admins"
+                  tooltip={tr("Contact admins")}
                   aria-expanded={contactOpen}
                   onClick={() => setContactOpen((open) => !open)}
                 >
                   <Mail className="shrink-0" />
-                  <span className="group-data-[collapsible=icon]:hidden">Contact admins</span>
+                  <span className="group-data-[collapsible=icon]:hidden">{tr("Contact admins")}</span>
                   <ChevronDown
                     className={`ml-auto shrink-0 transition-transform group-data-[collapsible=icon]:hidden ${contactOpen ? 'rotate-180' : ''}`}
                   />
@@ -260,14 +266,14 @@ export function AppSidebar({
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
                         <Link href="/contact">
-                          <span>Contact page</span>
+                          <span>{tr("Contact page")}</span>
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
                         <a href="https://discord.gg/qXPeQ2jys" target="_blank" rel="noreferrer">
-                          <span>Discord server</span>
+                          <span>{tr("Discord server")}</span>
                         </a>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
@@ -280,6 +286,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
+        <div className="group-data-[collapsible=icon]:hidden"><LanguageSwitcher /></div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={name}>
@@ -308,25 +315,25 @@ export function AppSidebar({
                   rail and the tooltip is a description, so without this the icon-only button has
                   no accessible name in the state most desktop users leave the sidebar in. */}
               <SidebarMenuButton
-                tooltip="Toggle theme"
-                aria-label="Toggle theme"
+                tooltip={tr("Toggle theme")}
+                aria-label={tr("Toggle theme")}
                 onClick={handleThemeToggle}
               >
                 <SunMoon ref={sunMoonRef} size={16} isAnimated={false} aria-hidden="true" />
-                <span className="group-data-[collapsible=icon]:hidden">Toggle theme</span>
+                <span className="group-data-[collapsible=icon]:hidden">{tr("Toggle theme")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
           <SidebarMenuItem>
             <SidebarMenuButton
-              tooltip="Sign out"
+              tooltip={tr("Sign out")}
               onClick={() => {
                 signOut()
                 router.push('/login')
               }}
             >
               <LogOut aria-hidden="true" />
-              <span className="group-data-[collapsible=icon]:hidden">Sign out</span>
+              <span className="group-data-[collapsible=icon]:hidden">{tr("Sign out")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

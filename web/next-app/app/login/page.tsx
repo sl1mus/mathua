@@ -1,6 +1,10 @@
 'use client'
 
+import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { useLocale } from '../../hooks/useLocale'
+
 import Loading from '../../components/Loading'
+import { tr } from '../../lib/i18n'
 
 import { Suspense, useEffect, useReducer, useState } from 'react'
 import { useTheme } from '../../hooks/useTheme'
@@ -106,10 +110,10 @@ function loginReducer(state: LoginState, action: LoginAction): LoginState {
 // and a special = neither Unicode letter nor digit (Go: unicode.IsLetter).
 function passwordIssues(pw: string): string[] {
   const issues: string[] = []
-  if (pw.length < 8) issues.push('at least 8 characters')
-  if (new TextEncoder().encode(pw).length > 72) issues.push('at most 72 characters')
-  if (!/\p{Nd}/u.test(pw)) issues.push('a number')
-  if (!/[^\p{L}\p{Nd}]/u.test(pw)) issues.push('a special character')
+  if (pw.length < 8) issues.push(tr("at least 8 characters"))
+  if (new TextEncoder().encode(pw).length > 72) issues.push(tr("at most 72 characters"))
+  if (!/\p{Nd}/u.test(pw)) issues.push(tr("a number"))
+  if (!/[^\p{L}\p{Nd}]/u.test(pw)) issues.push(tr("a special character"))
   return issues
 }
 
@@ -117,8 +121,8 @@ function passwordIssues(pw: string): string[] {
 // trimmed) form, keep both in sync.
 function usernameIssues(username: string): string | null {
   const u = username.trim().toLowerCase()
-  if (u.length < 3 || [...u].length > 20) return 'Username must be 3-20 characters'
-  if (!/^[a-z0-9_.]+$/.test(u)) return 'Username may only contain letters, numbers, underscore and dot'
+  if (u.length < 3 || [...u].length > 20) return tr("Username must be 3-20 characters")
+  if (!/^[a-z0-9_.]+$/.test(u)) return tr("Username may only contain letters, numbers, underscore and dot")
   return null
 }
 
@@ -126,7 +130,7 @@ function usernameIssues(username: string): string | null {
 // sync. Empty is handled by validateFields (required on signup).
 function emailIssues(email: string): string | null {
   const e = email.trim()
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return 'Enter a valid email address'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return tr("Enter a valid email address")
   return null
 }
 
@@ -135,16 +139,16 @@ function validateFields(
   values: { name: string; username: string; email: string; password: string }
 ): LoginState['fieldErrors'] {
   const errors: LoginState['fieldErrors'] = {}
-  if (tab === 'signup' && !values.name.trim()) errors.name = 'Name is required'
+  if (tab === 'signup' && !values.name.trim()) errors.name = tr("Name is required")
   if (!values.username.trim()) {
-    errors.username = 'Username is required'
+    errors.username = tr("Username is required")
   } else if (tab === 'signup') {
     const issue = usernameIssues(values.username)
     if (issue) errors.username = issue
   }
   if (tab === 'signup') {
     if (!values.email.trim()) {
-      errors.email = 'Email is required'
+      errors.email = tr("Email is required")
     } else {
       const issue = emailIssues(values.email)
       if (issue) errors.email = issue
@@ -152,11 +156,11 @@ function validateFields(
   }
   if (!values.password) {
     // aislop-ignore-next-line security/hardcoded-secret -- validation message string, not a credential
-    errors.password = 'Password is required'
+    errors.password = tr("Password is required")
   } else if (tab === 'signup') {
     const issues = passwordIssues(values.password)
     // aislop-ignore-next-line security/hardcoded-secret -- validation message string, not a credential
-    if (issues.length > 0) errors.password = 'Password needs ' + issues.join(', ')
+    if (issues.length > 0) errors.password = tr("Password needs ") + issues.join(', ')
   }
   return errors
 }
@@ -187,10 +191,12 @@ function EyeIcon({ off }: { off?: boolean }) {
 }
 
 function LoginInner() {
+  useLocale()
   const { mounted } = useTheme()
   const { push, back } = useRouter()
   const searchParams = useSearchParams()
   const [state, dispatch] = useReducer(loginReducer, initialState)
+  const [googleEnabled, setGoogleEnabled] = useState(false)
   const [googleReady, setGoogleReady] = useState(false)
   const [googleError, setGoogleError] = useState('')
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -222,7 +228,7 @@ function LoginInner() {
     if (err) {
       const label = err.replace(/_(denied|failed|taken|expired)$/, '')
       const pretty = label.charAt(0).toUpperCase() + label.slice(1)
-      if (err === 'google_denied') setGoogleError('Google sign-in was cancelled')
+      if (err === 'google_denied') setGoogleError(tr("Google sign-in was cancelled"))
       else if (err.endsWith('_denied')) setGoogleError(`${pretty} sign-in was cancelled`)
       else setGoogleError(`${pretty} sign-in failed, try again`)
     }
@@ -245,6 +251,7 @@ function LoginInner() {
       if (Array.isArray(cfg.providers)) {
         setProviders(cfg.providers.filter((p): p is OAuthProvider => p !== 'google' && p in OAUTH_LABELS))
       }
+      setGoogleEnabled(!!cfg.google_client_id || !!cfg.providers?.includes('google'))
       const cid = cfg.google_client_id
       if (!cid || cancelled) return
       const src = 'https://accounts.google.com/gsi/client'
@@ -263,7 +270,7 @@ function LoginInner() {
                 const data = await googleOneTap(resp.credential)
                 await establishSession(data.token, { student_id: data.student_id, name: data.name, username: '', concepts_mastered: 0, current_streak: 0, level: 'Novice', diagnostic_completed: data.diagnostic_completed })
                 push(ret)
-              } catch (e) { setGoogleError((e as Error).message || 'Google sign-in failed') } finally { setGoogleLoading(false) }
+              } catch (e) { setGoogleError((e as Error).message || tr("Google sign-in failed")) } finally { setGoogleLoading(false) }
             },
             auto_select: false,
             cancel_on_tap_outside: true,
@@ -276,7 +283,7 @@ function LoginInner() {
       }
       if (existing) { init(); return }
       const s = document.createElement('script'); s.src = src; s.async = true; s.defer = true; s.onload = init; document.head.appendChild(s)
-    }).catch(() => { if (!cancelled) setGoogleError('Could not reach the server, check your connection and reload') })
+    }).catch(() => { if (!cancelled) setGoogleError(tr("Could not reach the server, check your connection and reload")) })
     return () => { cancelled = true }
   }, [push, ret])
 
@@ -297,16 +304,16 @@ function LoginInner() {
 
   const handleForgot = async () => {
     if (!forgotId.trim()) {
-      setForgotMsg('Enter your username or email.')
+      setForgotMsg(tr("Enter your username or email."))
       return
     }
     setForgotBusy(true)
     setForgotMsg('')
     try {
       await requestPasswordReset(forgotId.trim())
-      setForgotMsg('If an account with a recovery email exists, a reset link is on its way.')
+      setForgotMsg(tr("If an account with a recovery email exists, a reset link is on its way."))
     } catch (e: unknown) {
-      setForgotMsg(e instanceof Error ? e.message : 'Request failed, try again.')
+      setForgotMsg(e instanceof Error ? e.message : tr("Request failed, try again."))
     } finally {
       setForgotBusy(false)
     }
@@ -315,7 +322,7 @@ function LoginInner() {
   const handleReset = async () => {
     const issues = passwordIssues(resetPw)
     if (issues.length > 0) {
-      setResetMsg('Password needs ' + issues.join(', '))
+      setResetMsg(tr("Password needs ") + issues.join(', '))
       return
     }
     if (!resetToken) return
@@ -326,7 +333,7 @@ function LoginInner() {
       await establishSession(res.token, { student_id: res.student_id, name: res.name, username: '', concepts_mastered: 0, current_streak: 0, level: 'Novice', diagnostic_completed: res.diagnostic_completed })
       push(ret)
     } catch (e: unknown) {
-      setResetMsg(e instanceof Error ? e.message : 'Reset failed, the link may have expired.')
+      setResetMsg(e instanceof Error ? e.message : tr("Reset failed, the link may have expired."))
     } finally {
       setResetBusy(false)
     }
@@ -364,7 +371,7 @@ function LoginInner() {
       await establishSession(res.token, { student_id: res.student_id, name: res.name, username: state.username.trim(), concepts_mastered: 0, current_streak: 0, level: 'Novice', diagnostic_completed: res.diagnostic_completed })
       push(ret)
     } catch (e: any) {
-      dispatch({ type: 'SET_ERROR', error: e.message || 'Authentication failed' })
+      dispatch({ type: 'SET_ERROR', error: e.message || tr("Authentication failed") })
     } finally { dispatch({ type: 'SET_LOADING', loading: false }) }
   }
 
@@ -419,80 +426,81 @@ function LoginInner() {
 
       <div className="flex flex-col px-4 sm:px-6 lg:px-10 xl:px-16 pb-[env(safe-area-inset-bottom)] overflow-x-hidden min-w-0">
         <div className="flex-1 flex flex-col justify-center w-full max-w-md mx-auto py-10 lg:py-0 min-w-0">
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <LanguageSwitcher />
             <button
               type="button"
               onClick={goBack}
               className="text-mathua-secondary text-sm hover:text-mathua-blue min-h-[44px]"
             >
-              Back
+              {tr("Back")}
             </button>
           </div>
-          <SectionHeader label="Account" title={state.tab === 'login' ? 'Welcome back' : 'Create account'} />
+          <SectionHeader label={tr("Account")} title={state.tab === 'login' ? tr("Welcome back") : tr("Create account")} />
           {authDisabled && (
             <p className="font-mono text-xs text-mathua-secondary text-center mt-4 mb-4">
-              Accounts are disabled on this server: continue as guest from the Study page.
+              {tr("Accounts are disabled on this server: continue as guest from the Study page.")}
             </p>
           )}
           <div className="flex gap-2 mt-6 mb-4 min-w-0">
-            <button type="button" onClick={() => dispatch({ type: 'SET_TAB', tab: 'login' })} className={`flex-1 min-w-0 min-h-[44px] rounded-none h-12 text-sm font-medium px-2 ${state.tab === 'login' ? 'bg-mathua-blue text-white' : 'bg-mathua-surface-elevated border border-mathua-border text-mathua-secondary'}`}>Login</button>
-            <button type="button" onClick={() => dispatch({ type: 'SET_TAB', tab: 'signup' })} className={`flex-1 min-w-0 min-h-[44px] rounded-none h-12 text-sm font-medium px-2 ${state.tab === 'signup' ? 'bg-mathua-blue text-white' : 'bg-mathua-surface-elevated border border-mathua-border text-mathua-secondary'}`}>Sign Up</button>
+            <button type="button" onClick={() => dispatch({ type: 'SET_TAB', tab: 'login' })} className={`flex-1 min-w-0 min-h-[44px] rounded-none h-12 text-sm font-medium px-2 ${state.tab === 'login' ? 'bg-mathua-blue text-white' : 'bg-mathua-surface-elevated border border-mathua-border text-mathua-secondary'}`}>{tr("Login")}</button>
+            <button type="button" onClick={() => dispatch({ type: 'SET_TAB', tab: 'signup' })} className={`flex-1 min-w-0 min-h-[44px] rounded-none h-12 text-sm font-medium px-2 ${state.tab === 'signup' ? 'bg-mathua-blue text-white' : 'bg-mathua-surface-elevated border border-mathua-border text-mathua-secondary'}`}>{tr("Sign Up")}</button>
           </div>
           <div className="bg-mathua-surface border border-mathua-border rounded-none p-4 sm:p-6 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
             {resetToken ? (
               <form onSubmit={e => { e.preventDefault(); handleReset() }} className="space-y-4">
-                <p className="font-mono text-xs text-mathua-secondary">Choose a new password.</p>
+                <p className="font-mono text-xs text-mathua-secondary">{tr("Choose a new password.")}</p>
                 <div>
-                  <label htmlFor="reset-password" className="font-mono text-[10px] uppercase text-mathua-muted">New password</label>
+                  <label htmlFor="reset-password" className="font-mono text-[10px] uppercase text-mathua-muted">{tr("New password")}</label>
                   <input
                     id="reset-password"
                     type="password"
                     value={resetPw}
                     onChange={(e) => setResetPw(e.target.value)}
-                    placeholder="new password"
+                    placeholder={tr("new password")}
                     autoComplete="new-password"
                     className={inputClassName(false)}
                   />
                 </div>
                 {resetMsg && <p className="text-mathua-red text-xs">{resetMsg}</p>}
                 <button type="submit" disabled={resetBusy} className="w-full border border-mathua-blue text-mathua-blue hover:bg-mathua-blue-faint rounded-none h-12 font-medium text-sm disabled:opacity-50 inline-flex items-center justify-center gap-2">
-                  {resetBusy ? (<><Loading inline size={13} /> Saving…</>) : 'Set new password'}
+                  {resetBusy ? (<><Loading inline size={13} /> {tr("Saving…")}</>) : tr("Set new password")}
                 </button>
               </form>
             ) : forgotMode ? (
               <form onSubmit={e => { e.preventDefault(); handleForgot() }} className="space-y-4">
-                <p className="font-mono text-xs text-mathua-secondary">Enter your username or email: if a recovery email is on file, we’ll send a reset link.</p>
+                <p className="font-mono text-xs text-mathua-secondary">{tr("Enter your username or email: if a recovery email is on file, we’ll send a reset link.")}</p>
                 <div>
-                  <label htmlFor="forgot-id" className="font-mono text-[10px] uppercase text-mathua-muted">Username or email</label>
+                  <label htmlFor="forgot-id" className="font-mono text-[10px] uppercase text-mathua-muted">{tr("Username or email")}</label>
                   <input
                     id="forgot-id"
                     type="text"
                     value={forgotId}
                     onChange={(e) => setForgotId(e.target.value)}
-                    placeholder="username or email"
+                    placeholder={tr("username or email")}
                     autoComplete="username"
                     className={inputClassName(false)}
                   />
                 </div>
                 {forgotMsg && <p className="font-mono text-xs text-mathua-secondary">{forgotMsg}</p>}
                 <button type="submit" disabled={forgotBusy} className="w-full border border-mathua-blue text-mathua-blue hover:bg-mathua-blue-faint rounded-none h-12 font-medium text-sm disabled:opacity-50 inline-flex items-center justify-center gap-2">
-                  {forgotBusy ? (<><Loading inline size={13} /> Sending…</>) : 'Send reset link'}
+                  {forgotBusy ? (<><Loading inline size={13} /> {tr("Sending…")}</>) : tr("Send reset link")}
                 </button>
                 <button type="button" onClick={() => { setForgotMode(false); setForgotMsg('') }} className="w-full text-mathua-muted text-xs hover:text-mathua-secondary">
-                  ← Back to login
+                  {tr("← Back to login")}
                 </button>
               </form>
             ) : (
             <form onSubmit={e => { e.preventDefault(); handleSubmit() }}>
             {state.tab === 'signup' && (
               <div>
-                <label htmlFor="name" className="font-mono text-[10px] uppercase text-mathua-muted">Name</label>
+                <label htmlFor="name" className="font-mono text-[10px] uppercase text-mathua-muted">{tr("Name")}</label>
                 <input
                   id="name"
                   type="text"
                   value={state.name}
                   onChange={(e) => updateField({ type: 'SET_NAME', name: e.target.value })}
-                  placeholder="Your name"
+                  placeholder={tr("Your name")}
                   autoComplete="name"
                   aria-invalid={!!state.fieldErrors.name}
                   aria-describedby={state.fieldErrors.name ? 'name-error' : undefined}
@@ -502,13 +510,13 @@ function LoginInner() {
               </div>
             )}
             <div>
-              <label htmlFor="username" className="font-mono text-[10px] uppercase text-mathua-muted">Username</label>
+              <label htmlFor="username" className="font-mono text-[10px] uppercase text-mathua-muted">{tr("Username")}</label>
               <input
                 id="username"
                 type="text"
                 value={state.username}
                 onChange={(e) => updateField({ type: 'SET_USERNAME', username: e.target.value })}
-                placeholder="username"
+                placeholder={tr("username")}
                 autoComplete="username"
                 aria-invalid={!!state.fieldErrors.username}
                 aria-describedby={state.fieldErrors.username ? 'username-error' : undefined}
@@ -518,7 +526,7 @@ function LoginInner() {
             </div>
             {state.tab === 'signup' && (
               <div>
-                <label htmlFor="email" className="font-mono text-[10px] uppercase text-mathua-muted">Email</label>
+                <label htmlFor="email" className="font-mono text-[10px] uppercase text-mathua-muted">{tr("Email")}</label>
                 <input
                   id="email"
                   type="email"
@@ -530,19 +538,19 @@ function LoginInner() {
                   aria-describedby={state.fieldErrors.email ? 'email-error' : undefined}
                   className={inputClassName(!!state.fieldErrors.email)}
                 />
-                <p className="font-mono text-[11px] text-mathua-muted mt-1">Required for password reset and matching your Google login.</p>
+                <p className="font-mono text-[11px] text-mathua-muted mt-1">{tr("Required for password reset and matching your Google login.")}</p>
                 {state.fieldErrors.email && <p id="email-error" className="text-mathua-red text-xs mt-1">{state.fieldErrors.email}</p>}
               </div>
             )}
             <div>
-              <label htmlFor="password" className="font-mono text-[10px] uppercase text-mathua-muted">Password</label>
+              <label htmlFor="password" className="font-mono text-[10px] uppercase text-mathua-muted">{tr("Password")}</label>
               <div className="relative">
                 <input
                   id="password"
                   type={state.showPassword ? 'text' : 'password'}
                   value={state.password}
                   onChange={(e) => updateField({ type: 'SET_PASSWORD', password: e.target.value })}
-                  placeholder="password"
+                  placeholder={tr("password")}
                   autoComplete={state.tab === 'signup' ? 'new-password' : 'current-password'}
                   aria-invalid={!!state.fieldErrors.password}
                   aria-describedby={state.fieldErrors.password ? 'password-error' : undefined}
@@ -551,9 +559,9 @@ function LoginInner() {
                 <button
                   type="button"
                   onClick={() => dispatch({ type: 'TOGGLE_SHOW_PASSWORD' })}
-                  aria-label={state.showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={state.showPassword ? tr("Hide password") : tr("Show password")}
                   aria-pressed={state.showPassword}
-                  title={state.showPassword ? 'Hide password' : 'Show password'}
+                  title={state.showPassword ? tr("Hide password") : tr("Show password")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-mathua-muted hover:text-mathua-blue"
                 >
                   <EyeIcon off={state.showPassword} />
@@ -563,21 +571,22 @@ function LoginInner() {
             </div>
             {state.error && <p className="text-mathua-red text-xs">{state.error}</p>}
             <button type="submit" disabled={state.loading || authDisabled} data-testid="auth-submit" className="w-full border border-mathua-blue text-mathua-blue hover:bg-mathua-blue-faint rounded-none h-12 font-medium text-sm disabled:opacity-50">
-              {state.loading ? (<><Loading inline size={13} /> Loading…</>) : state.tab === 'signup' ? 'Create Account' : 'Login'}
+              {state.loading ? (<><Loading inline size={13} /> {tr("Loading…")}</>) : state.tab === 'signup' ? tr("Create Account") : tr("Login")}
             </button>
-            <div className="flex items-center gap-3 my-2">
+            {(googleEnabled || providers.length > 0) && <div className="flex items-center gap-3 my-2">
               <div className="h-px flex-1 bg-mathua-border" />
-              <span className="font-mono text-[10px] uppercase text-mathua-muted">or</span>
+              <span className="font-mono text-[10px] uppercase text-mathua-muted">{tr("or")}</span>
               <div className="h-px flex-1 bg-mathua-border" />
             </div>
+            }
             <div className="space-y-2">
-              {(providers.length === 0 || providers.includes('google')) && (
+              {googleEnabled && (
               <>
               <div id="g_id_onload" className="flex justify-center min-h-[44px] items-center" />
               {!googleReady && (
                 <button type="button" onClick={handleGoogleRedirect} disabled={googleLoading} className="w-full border border-mathua-border bg-white text-[#3c4043] hover:bg-gray-50 rounded-none h-12 font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-50">
                   <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-5.09s.27-3.64.76-5.09l-7.98-6.19C.92 15.77 0 19.69 0 24s.92 8.23 2.56 11.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-                  {googleLoading ? 'Connecting…' : 'Continue with Google'}
+                  {googleLoading ? tr("Connecting…") : tr("Continue with Google")}
                 </button>
               )}
               </>
@@ -589,7 +598,7 @@ function LoginInner() {
                   onClick={() => startOAuthLogin(p)}
                   className="w-full border border-mathua-border text-mathua-secondary hover:border-mathua-blue hover:text-mathua-blue rounded-none h-12 font-medium text-sm flex items-center justify-center gap-2"
                 >
-                  Continue with {OAUTH_LABELS[p]}
+                  {tr("Continue with")} {OAUTH_LABELS[p]}
                 </button>
               ))}
               {googleError && <p className="text-mathua-red text-xs text-center">{googleError}</p>}
@@ -597,11 +606,11 @@ function LoginInner() {
             <div className="mt-3 text-center">
               {state.tab === 'login' && !forgotMode && !resetToken && (
                 <button type="button" onClick={() => setForgotMode(true)} className="block mx-auto text-mathua-muted text-xs hover:text-mathua-secondary mb-2">
-                  Forgot password?
+                  {tr("Forgot password?")}
                 </button>
               )}
               <Link href="/profile" className="text-mathua-muted text-xs hover:text-mathua-secondary">
-                Skip for now: try without account (progress stays on this device)
+                {tr("Skip for now: try without account (progress stays on this device)")}
               </Link>
             </div>
             </form>

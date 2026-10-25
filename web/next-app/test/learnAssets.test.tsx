@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import {
   getLessonKPs,
@@ -13,6 +13,9 @@ import {
   getNext,
 } from '../lib/api'
 import { getUserInfo } from '../lib/auth'
+import { setLocale } from '../lib/locale'
+import LanguageSwitcher from '../components/LanguageSwitcher'
+import { findMathField, typeAnswer } from './helpers/answerInput'
 import type { LessonAsset } from '../lib/api'
 
 vi.mock('next/image', () => ({
@@ -190,5 +193,34 @@ describe('/learn figures', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Next →' }))
     await waitFor(() => expect(container.textContent).toContain('2 + 3 = ?'))
     expect(screen.getByRole('button', { name: 'Check' })).toBeTruthy()
+  })
+})
+
+describe('language changes during a real learning question', () => {
+  afterEach(() => { setLocale('en', false) })
+  it('preserves the editor, typed answer and canonical grading anchor', async () => {
+    setLocale('en', false)
+    const canonical = '2 + 3 = ?'
+    vi.mocked(getLessonKPs).mockResolvedValue({concept_id:'arith.add.single', kps:[{label:'Addition',subgoals:[],worked_example:'Add the operands.'}]} as never)
+    vi.mocked(getLessonPractice).mockResolvedValue({concept_id:'arith.add.single',questions:[{
+      question:canonical,answer:'5',explanation:'2 + 3 = 5',
+      localizations:{ru:{question:'Вычислите: 2 + 3 = ?',explanation:'Сложим: 2 + 3 = 5'}},
+    }]})
+    const LearnStepper = (await import('../components/LearnStepper')).default
+    render(<><LanguageSwitcher /><LearnStepper conceptId="arith.add.single" /></>)
+    fireEvent.click(await screen.findByRole('button',{name:'Next →'}))
+    const field = await findMathField()
+    typeAnswer(field,'5')
+    const fetchCount=vi.mocked(getLessonPractice).mock.calls.length
+    fireEvent.change(screen.getByLabelText('Language / Язык'),{target:{value:'ru'}})
+    expect(screen.getByText('Вычислите: 2 + 3 = ?')).toBeInTheDocument()
+    expect(await findMathField()).toBe(field)
+    expect(Reflect.get(field,'value')).toBe('5')
+    expect(vi.mocked(getLessonPractice).mock.calls.length).toBe(fetchCount)
+    fireEvent.change(screen.getByLabelText('Language / Язык'),{target:{value:'en'}})
+    expect(await findMathField()).toBe(field)
+    expect(Reflect.get(field,'value')).toBe('5')
+    fireEvent.click(screen.getByRole('button',{name:'Check'}))
+    await waitFor(() => expect(submitStudyAnswer).toHaveBeenCalledWith('arith.add.single','5',expect.any(Number),canonical))
   })
 })

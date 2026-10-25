@@ -22,6 +22,11 @@ RUN STAMP="build-$(date -u +%Y%m%dT%H%M%SZ)" && \
 # set build arg NEXT_PUBLIC_API_URL=https://mathua.fly.dev
 ARG NEXT_PUBLIC_API_URL=""
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_LOCALE=en
+ENV NEXT_PUBLIC_LOCALE=$NEXT_PUBLIC_LOCALE
+ARG NEXT_PUBLIC_SITE_URL=https://mathua.com
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_TELEMETRY_DISABLED=1
 # This image serves the export and the API from one origin, so /api/* is correct.
 ENV NEXT_PUBLIC_SAME_ORIGIN_API=1
 RUN cd web/next-app && npm run build

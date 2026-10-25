@@ -113,12 +113,12 @@ describe('theme switching is reachable where it is needed', () => {
     // hole above: valid code, no error, a capability gone.
     const header = readFileSync(join(process.cwd(), 'components/Header.tsx'), 'utf8')
     expect(header).toMatch(/toggleTheme/)
-    expect(header).toMatch(/aria-label="Toggle theme"/)
+    expect(header).toMatch(/aria-label=\{tr\("Toggle theme"\)\}/)
   })
 
   it('gives the profile sidebar its own theme control', () => {
     const sidebar = readFileSync(join(process.cwd(), 'components/app-sidebar.tsx'), 'utf8')
     expect(sidebar).toMatch(/toggleTheme/)
-    expect(sidebar).toMatch(/aria-label="Toggle theme"/)
+    expect(sidebar).toMatch(/aria-label=\{tr\("Toggle theme"\)\}/)
   })
 })

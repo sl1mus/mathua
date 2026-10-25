@@ -1,5 +1,8 @@
 'use client'
 
+import { useLocale } from '../hooks/useLocale'
+import { localizedProblem } from '../lib/localizedProblem'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import KatexContent from './KatexContent'
@@ -87,6 +90,7 @@ function catalogEntries() {
 export { hrefConceptId as headConceptId }
 
 export default function LearnStepper({ conceptId, returnStack = [] }: Props) {
+  const locale = useLocale()
   const [entries, setEntries] = useState<Entry[]>([])
   const [kps, setKps] = useState<KpInfo[]>([])
   // The concept's own diagram. The KP endpoint has always returned it and the client has
@@ -777,11 +781,13 @@ export default function LearnStepper({ conceptId, returnStack = [] }: Props) {
             )
           }
           const qe = e as QEntry
+          const localized = localizedProblem(qe.q, locale)
           const locked = qe.feedback !== null
           return (
             <div key={qe.key} className={`border bg-mathua-surface p-6 ${qe.feedback?.correct ? 'border-mathua-green-faint' : qe.feedback ? 'border-mathua-red-faint' : 'border-mathua-border'}`}>
-              <KatexContent className="text-sm text-mathua-primary font-mono whitespace-pre-wrap">{stemWithoutChoices(qe.q.question)}</KatexContent>
-              <ChoiceOptions question={qe.q.question} value={qe.answer} onPick={v => setEntry(qe.key, { answer: v })} disabled={locked || qe.checking} />
+              <KatexContent className="text-sm text-mathua-primary font-mono whitespace-pre-wrap">{stemWithoutChoices(localized.question)}</KatexContent>
+              {localized.fallback && <p className="mt-2 text-xs text-mathua-muted" lang="ru">Перевод этого задания ещё не готов. Показан английский оригинал.</p>}
+              <ChoiceOptions question={localized.question} value={qe.answer} onPick={v => setEntry(qe.key, { answer: v })} disabled={locked || qe.checking} />
               {!locked && (
                 <form onSubmit={ev => { ev.preventDefault(); handleCheck(qe.key) }} className="mt-3 flex flex-col sm:flex-row gap-2">
                   <label htmlFor={`learn-answer-${qe.key}`} className="sr-only">Your answer</label>
@@ -827,7 +833,7 @@ export default function LearnStepper({ conceptId, returnStack = [] }: Props) {
                       <p className="font-mono text-[11px] uppercase tracking-wider text-mathua-muted">
                         {qe.feedback.correct ? 'Why' : 'How'}
                       </p>
-                      <KatexContent className="mt-1 text-xs font-mono text-mathua-secondary whitespace-pre-wrap">{qe.feedback.text}</KatexContent>
+                      <KatexContent className="mt-1 text-xs font-mono text-mathua-secondary whitespace-pre-wrap">{qe.q.localizations?.[locale]?.explanation ?? qe.feedback.text}</KatexContent>
                     </div>
                   )}
                 </div>

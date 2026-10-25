@@ -1955,13 +1955,14 @@ func (s *Server) handleLessonConcept(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type qInfo struct {
-		Question        string `json:"question"`
-		Answer          string `json:"answer"`
-		Explanation     string `json:"explanation"`
-		Source          string `json:"source,omitempty"`
-		AnswerHint      string `json:"answer_hint,omitempty"`
-		AnswerInputMode string `json:"answer_input_mode,omitempty"`
-		KPOrdinal       int    `json:"kp_ordinal,omitempty"`
+		Localizations   map[string]generator.LocalizedProblem `json:"localizations,omitempty"`
+		Question        string                                `json:"question"`
+		Answer          string                                `json:"answer"`
+		Explanation     string                                `json:"explanation"`
+		Source          string                                `json:"source,omitempty"`
+		AnswerHint      string                                `json:"answer_hint,omitempty"`
+		AnswerInputMode string                                `json:"answer_input_mode,omitempty"`
+		KPOrdinal       int                                   `json:"kp_ordinal,omitempty"`
 	}
 	// Every question in this response carries the format its answer needs, not
 	// only the concept's grading type. LearnStepper used the concept record,
@@ -2069,7 +2070,7 @@ func (s *Server) handleLessonConcept(w http.ResponseWriter, r *http.Request) {
 		if p.KPOrdinal > 0 {
 			qOrdinal = p.KPOrdinal
 		}
-		questions[i] = qInfo{Question: p.Question, Answer: p.Answer, Explanation: p.Explanation, Source: "generator", AnswerHint: qFormat.Hint, AnswerInputMode: qFormat.InputMode, KPOrdinal: qOrdinal}
+		questions[i] = qInfo{Localizations: p.Localizations, Question: p.Question, Answer: p.Answer, Explanation: p.Explanation, Source: "generator", AnswerHint: qFormat.Hint, AnswerInputMode: qFormat.InputMode, KPOrdinal: qOrdinal}
 	}
 	writeJSON(w, map[string]interface{}{"questions": questions, "concept_id": conceptID})
 }

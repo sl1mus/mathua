@@ -21,7 +21,14 @@ type GeneratorContext struct {
 	KPOrdinal int
 }
 
+type LocalizedProblem struct {
+	Question    string `json:"question"`
+	Explanation string `json:"explanation"`
+}
+
 type Problem struct {
+	Localizations map[string]LocalizedProblem
+
 	Question    string
 	Answer      string
 	Explanation string

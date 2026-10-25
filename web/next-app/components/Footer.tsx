@@ -1,5 +1,9 @@
 'use client'
 
+import { useLocale } from '../hooks/useLocale'
+
+import { tr, translatedLabel } from '../lib/i18n'
+
 import Link from 'next/link'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { DICEBEAR_VERSION } from '../lib/dicebear'
@@ -107,11 +111,11 @@ const headingClass = 'font-mono text-[10px] uppercase tracking-[0.2em] text-[var
 // and license for every source, so the line names them and "Licenses" links to /licenses, which
 // renders THIRD_PARTY_NOTICES.md in full.
 const CREDITS = [
-  'MIT License',
-  'Avatars by DiceBear',
-  'Lesson content: Algebrica (CC BY-NC 4.0)',
-  'Lesson content: OpenStax (CC BY-NC-SA 4.0)',
-  'Glossary: OpenStax, DLMF and others',
+  "MIT License",
+  "Avatars by DiceBear",
+  "Lesson content: Algebrica (CC BY-NC 4.0)",
+  "Lesson content: OpenStax (CC BY-NC-SA 4.0)",
+  "Glossary: OpenStax, DLMF and others",
 ]
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -135,6 +139,7 @@ function useFooterArt(): FooterArt {
 }
 
 export default function Footer({ className = '' }: FooterProps) {
+  useLocale()
   const art = useFooterArt()
 
   return (
@@ -202,28 +207,28 @@ export default function Footer({ className = '' }: FooterProps) {
               </div>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-[var(--footer-ink-muted)]">
-              Open-source adaptive math learning engine.
+              {tr("Open-source adaptive math learning engine.")}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-x-10 gap-y-8 sm:gap-x-16">
             <nav aria-labelledby="footer-learn">
-              <h2 id="footer-learn" className={headingClass}>Learn</h2>
+              <h2 id="footer-learn" className={headingClass}>{tr("Learn")}</h2>
               <ul className="mt-3 space-y-2 font-mono text-xs">
-                <li><Link href="/domains" className={linkClass}>Domains</Link></li>
-                <li><Link href="/leaderboard" className={linkClass}>Leaderboard</Link></li>
-                <li><Link href="/graph" className={linkClass}>Concept graph</Link></li>
+                <li><Link href="/domains" className={linkClass}>{tr("Domains")}</Link></li>
+                <li><Link href="/leaderboard" className={linkClass}>{tr("Leaderboard")}</Link></li>
+                <li><Link href="/graph" className={linkClass}>{tr("Concept graph")}</Link></li>
               </ul>
             </nav>
 
             <nav aria-labelledby="footer-resources">
-              <h2 id="footer-resources" className={headingClass}>Resources</h2>
+              <h2 id="footer-resources" className={headingClass}>{tr("Resources")}</h2>
               <ul className="mt-3 space-y-2 font-mono text-xs">
-                <li><Link href="/how-it-works" className={linkClass}>How it works</Link></li>
-                <li><Link href="/docs" className={linkClass}>Docs</Link></li>
-                <li><Link href="/docs/contributing" className={linkClass}>Contributing</Link></li>
-                <li><Link href="/note" className={linkClass}>Creator&apos;s Note</Link></li>
-                <li><Link href="/contact" className={linkClass}>Contact admins</Link></li>
+                <li><Link href="/how-it-works" className={linkClass}>{tr("How it works")}</Link></li>
+                <li><Link href="/docs" className={linkClass}>{tr("Docs")}</Link></li>
+                <li><Link href="/docs/contributing" className={linkClass}>{tr("Contributing")}</Link></li>
+                <li><Link href="/note" className={linkClass}>{tr("Creator’s Note")}</Link></li>
+                <li><Link href="/contact" className={linkClass}>{tr("Contact admins")}</Link></li>
                 <li>
                   <a
                     href="https://discord.gg/qXPeQ2jys"
@@ -251,16 +256,16 @@ export default function Footer({ className = '' }: FooterProps) {
 
         <div className="footer-credits border-t pt-5 font-mono text-[10px] opacity-80">
           {CREDITS.map(credit => (
-            <span key={credit} className="after:ml-3 after:content-['·']">
-              {credit}
+            <span key={translatedLabel(credit)} className="after:ml-3 after:content-['·']">
+              {translatedLabel(credit)}
             </span>
           ))}
           <Link href="/licenses" className="underline hover:no-underline">
-            Licenses
+            {tr("Licenses")}
           </Link>
           {' · '}
           <Link href="/privacy" className="underline hover:no-underline">
-            Privacy
+            {tr("Privacy")}
           </Link>
         </div>
       </div>
