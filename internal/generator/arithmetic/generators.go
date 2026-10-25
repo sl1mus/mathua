@@ -102,12 +102,12 @@ func (g *addGen) Generate(ctx generator.GeneratorContext) generator.Problem {
 			b = (b/10)*10 + onesB
 		}
 	}
-	return generator.Problem{
+	return additionLocalizations(generator.Problem{
 		Question:    fmt.Sprintf("\\(%d + %d = ?\\)", a, b),
 		Answer:      fmt.Sprintf("%d", a+b),
 		Explanation: fmt.Sprintf("Given %d + %d. Step 1: start at %d. Step 2: count up %d → %d. Answer: %d", a, b, a, b, a+b, a+b),
 		Facts:       map[string]string{"a": strconv.Itoa(a), "b": strconv.Itoa(b), "sum": strconv.Itoa(a + b), "ones_a": strconv.Itoa(a % 10), "ones_b": strconv.Itoa(b % 10)},
-	}
+	})
 }
 
 type addWordGen struct{}

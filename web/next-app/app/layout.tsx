@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import LocaleInitializer from '../components/LocaleInitializer'
 import { locale } from '../lib/i18n'
 import Script from 'next/script'
 import localFont from 'next/font/local'
@@ -112,6 +113,7 @@ export default function RootLayout({
         >
           {children}
         </div>
+        <LocaleInitializer />
         <Toaster />
         {/* Vercel serves the analytics script at /_vercel/insights. The static
             export that the e2e suite serves has no such route, and its 404 is a

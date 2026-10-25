@@ -1,5 +1,8 @@
 'use client'
 
+import LanguageSwitcher from './LanguageSwitcher'
+import { useLocale } from '../hooks/useLocale'
+
 import { tr, translatedLabel } from '../lib/i18n'
 
 import Link from 'next/link'
@@ -22,6 +25,7 @@ interface HeaderProps {
 }
 
 export default function Header({ links }: HeaderProps) {
+  useLocale()
   const { mounted, toggleTheme } = useTheme()
   const { loggedIn, user } = useAuthState()
   const { visible: chromeVisible } = useChrome()
@@ -210,6 +214,7 @@ export default function Header({ links }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <LanguageSwitcher />
             {mounted && (
               <button
                 type="button"

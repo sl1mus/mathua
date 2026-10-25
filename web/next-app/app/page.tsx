@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '../hooks/useLocale'
+
 import { tr } from '../lib/i18n'
 
 import { useRouter } from 'next/navigation'
@@ -20,6 +22,7 @@ import {
 } from './home/sections'
 
 export default function HomePage() {
+  useLocale()
   const { mounted } = useTheme()
   const { push } = useRouter()
   // Logged-in visits bounce to /profile; explicit Home clicks stay put.

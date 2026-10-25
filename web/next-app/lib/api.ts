@@ -1159,6 +1159,7 @@ export async function getLessons(studentId?: string): Promise<LessonsRes> {
 }
 
 export interface PracticeQuestion {
+ localizations?: Partial<Record<'en' | 'ru', { question: string; explanation: string }>>
 	question: string
 	answer: string
 	explanation: string

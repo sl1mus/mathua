@@ -1,6 +1,9 @@
 'use client'
 
-import { tr } from '../lib/i18n'
+import LanguageSwitcher from './LanguageSwitcher'
+import { useLocale } from '../hooks/useLocale'
+
+import { tr, translatedLabel } from '../lib/i18n'
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -65,12 +68,12 @@ interface SidebarNavItem {
 }
 
 const NAV_ITEMS: SidebarNavItem[] = [
-  { label: tr("Learn"), href: '/learn', icon: Play },
-  { label: tr("Graph"), href: '/graph', icon: Network },
-  { label: tr("Domains"), href: '/domains', icon: Layers },
-  { label: tr("Leaderboard"), href: '/leaderboard', icon: Trophy },
-  { label: tr("History"), href: '/history', icon: ChartNoAxesColumn },
-  { label: tr("Settings"), href: '/settings', icon: Settings },
+  { label: "Learn", href: '/learn', icon: Play },
+  { label: "Graph", href: '/graph', icon: Network },
+  { label: "Domains", href: '/domains', icon: Layers },
+  { label: "Leaderboard", href: '/leaderboard', icon: Trophy },
+  { label: "History", href: '/history', icon: ChartNoAxesColumn },
+  { label: "Settings", href: '/settings', icon: Settings },
 ]
 
 // Resources group: docs, glossary, contributing, creator's note, how it works.
@@ -78,15 +81,15 @@ const NAV_ITEMS: SidebarNavItem[] = [
   // duplication). The glossary is a standalone reference with no progress,
   // XP or gating, so it sits here rather than beside Learn.
   const RESOURCE_ITEMS: SidebarNavItem[] = [
-    { label: tr("Docs"), href: '/docs', icon: FileText },
-    { label: tr("Glossary"), href: '/glossary', icon: BookOpen },
-    { label: tr("Contribute"), href: '/docs/contributing', icon: Handshake },
-    { label: tr("Creator's note"), href: '/note', icon: Pencil },
-    { label: tr("How it works"), href: '/how-it-works', icon: House },
+    { label: "Docs", href: '/docs', icon: FileText },
+    { label: "Glossary", href: '/glossary', icon: BookOpen },
+    { label: "Contribute", href: '/docs/contributing', icon: Handshake },
+    { label: "Creator's note", href: '/note', icon: Pencil },
+    { label: "How it works", href: '/how-it-works', icon: House },
   ]
 
 const ADMIN_ITEM: SidebarNavItem = {
-  label: tr("Admin"),
+  label: "Admin",
   href: '/admin',
   icon: Shield,
 }
@@ -122,6 +125,7 @@ export function AppSidebar({
   dueReviews = 0,
   isAdmin = false,
 }: AppSidebarProps) {
+  useLocale()
   const pathname = usePathname()
   // Contact is one control, not two destinations: the page and the Discord
   // server answer different needs, so the choice belongs after the click.
@@ -203,16 +207,16 @@ export function AppSidebar({
                 const Icon = item.icon
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+                    <SidebarMenuButton asChild isActive={active} tooltip={translatedLabel(item.label)}>
                       {item.href.startsWith('http') ? (
                         <a href={item.href} target="_blank" rel="noreferrer">
                           <Icon className="shrink-0" />
-                          <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                          <span className="group-data-[collapsible=icon]:hidden">{translatedLabel(item.label)}</span>
                         </a>
                       ) : (
                         <Link href={item.href}>
                           <Icon className="shrink-0" />
-                          <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                          <span className="group-data-[collapsible=icon]:hidden">{translatedLabel(item.label)}</span>
                         </Link>
                       )}
                     </SidebarMenuButton>
@@ -234,10 +238,10 @@ export function AppSidebar({
                 const Icon = item.icon
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+                    <SidebarMenuButton asChild isActive={active} tooltip={translatedLabel(item.label)}>
                       <Link href={item.href}>
                         <Icon className="shrink-0" />
-                        <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                        <span className="group-data-[collapsible=icon]:hidden">{translatedLabel(item.label)}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -282,6 +286,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
+        <div className="group-data-[collapsible=icon]:hidden"><LanguageSwitcher /></div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={name}>

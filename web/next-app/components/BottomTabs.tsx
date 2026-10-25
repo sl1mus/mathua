@@ -1,6 +1,8 @@
 'use client'
 
-import { tr } from '../lib/i18n'
+import { useLocale } from '../hooks/useLocale'
+
+import { tr, translatedLabel } from '../lib/i18n'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -18,14 +20,15 @@ import Avatar from './Avatar'
 // question, so it leads; Domains holds the orientation slot that the closed
 // Study route used to occupy. Order is mirrored in lib/nav.ts.
 const TABS: { label: string; href: string; icon: IconComponent }[] = [
-  { label: tr("Home"), href: '/', icon: House },
-  { label: tr("Learn"), href: '/learn', icon: Play },
-  { label: tr("Domains"), href: '/domains', icon: Layers },
-  { label: tr("Profile"), href: '/profile', icon: User },
-  { label: tr("Graph"), href: '/graph', icon: Network },
+  { label: "Home", href: '/', icon: House },
+  { label: "Learn", href: '/learn', icon: Play },
+  { label: "Domains", href: '/domains', icon: Layers },
+  { label: "Profile", href: '/profile', icon: User },
+  { label: "Graph", href: '/graph', icon: Network },
 ]
 
 export default function BottomTabs() {
+  useLocale()
   const pathname = usePathname()
   // Chrome visibility is shared with the header so the two always agree --
   // a header that hid while the tab bar stayed would read as a bug, not a
@@ -87,7 +90,7 @@ export default function BottomTabs() {
           <Link
             key={t.href}
             href={t.href}
-            aria-label={t.label}
+            aria-label={translatedLabel(t.label)}
             aria-current={active ? 'page' : undefined}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 font-mono border-t-[2px] min-h-[44px] transition-colors ${
               active ? 'border-mathua-blue text-mathua-blue' : 'border-transparent text-mathua-muted hover:text-mathua-primary'
@@ -106,7 +109,7 @@ export default function BottomTabs() {
             ) : (
               <Icon size={18} />
             )}
-            <span className="text-[9px] uppercase tracking-wide">{t.label}</span>
+            <span className="text-[9px] uppercase tracking-wide">{translatedLabel(t.label)}</span>
           </Link>
         )
       })}

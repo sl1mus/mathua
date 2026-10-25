@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '../../hooks/useLocale'
+
 import { tr, translatedLabel } from '../../lib/i18n'
 
 import Link from 'next/link'
@@ -37,6 +39,7 @@ const CTA_GHOST_ON_ART =
   'group relative inline-flex min-h-[44px] items-center justify-center overflow-hidden border border-white/45 bg-transparent px-6 py-3 text-sm font-medium text-white transition-colors hover:border-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
 
 export function HeroSection({ onGetStarted }: { onGetStarted: () => void }) {
+  useLocale()
   return (
     // One responsive hero, not two stacked variants. Below lg it is the full-bleed
     // treatment (B): art behind the copy under a scrim. At lg and up it is the
@@ -145,6 +148,7 @@ function CountUp({ target, duration = 1200 }: { target: number; duration?: numbe
 }
 
 export function TrustSection() {
+  useLocale()
   return (
     <section data-reveal className="border-b border-mathua-division py-16">
       <div className="section-label">{tr("( 02 · Why it is trusted )")}</div>
@@ -174,31 +178,32 @@ export function TrustSection() {
 const FEATURES = [
   {
     numeral: 'I.',
-    title: tr("Mastery gating"),
-    body: tr("Progress uses accuracy, difficulty, problem variety and response time. New concepts unlock after their prerequisites are mastered."),
+    title: "Mastery gating",
+    body: "Progress uses accuracy, difficulty, problem variety and response time. New concepts unlock after their prerequisites are mastered.",
   },
   {
     numeral: 'II.',
-    title: tr("Concept graph"),
-    body: tr("Every concept is a node with explicit prerequisites. Mathua reads the graph and your progress together, and picks what you see next from the two."),
+    title: "Concept graph",
+    body: "Every concept is a node with explicit prerequisites. Mathua reads the graph and your progress together, and picks what you see next from the two.",
   },
   {
     numeral: 'III.',
-    title: tr("Spaced repetition"),
-    body: tr("Mastered concepts return for spaced review, guided by answer history and estimated retention."),
+    title: "Spaced repetition",
+    body: "Mastered concepts return for spaced review, guided by answer history and estimated retention.",
   },
 ]
 
 export function FeaturesSection() {
+  useLocale()
   return (
     <section data-reveal className="border-b border-mathua-division py-16">
       <div className="section-label">{tr("( 03 · 3 Main Features )")}</div>
       <div className="mt-6 grid gap-px border border-mathua-division bg-mathua-division md:grid-cols-3">
         {FEATURES.map(f => (
-          <div key={f.title} className="bg-mathua-bg p-6">
+          <div key={translatedLabel(f.title)} className="bg-mathua-bg p-6">
             <div className="font-mono text-xs text-mathua-blue">{f.numeral}</div>
-            <h4 className="mt-3 font-serif text-lg text-mathua-primary">{f.title}</h4>
-            <p className="mt-2 text-[13px] leading-relaxed text-mathua-secondary">{f.body}</p>
+            <h4 className="mt-3 font-serif text-lg text-mathua-primary">{translatedLabel(f.title)}</h4>
+            <p className="mt-2 text-[13px] leading-relaxed text-mathua-secondary">{translatedLabel(f.body)}</p>
           </div>
         ))}
       </div>
@@ -213,6 +218,7 @@ const chipClass = (status: string) => {
 }
 
 export function StatesSection() {
+  useLocale()
   return (
     <section data-reveal className="border-b border-mathua-division py-16">
       <div className="section-label">{tr("( 04 · The States )")}</div>
@@ -247,6 +253,7 @@ function DomainTable({ rows }: { rows: [string, number][] }) {
 }
 
 export function CoverageSection() {
+  useLocale()
   const rows: [string, number][] = domainOrder.map(d => [domainLabels[d], domainCounts[d]])
   const half = Math.ceil(rows.length / 2)
   return (
@@ -272,6 +279,7 @@ export function CoverageSection() {
 }
 
 export function RankingSection() {
+  useLocale()
   return (
     <section data-reveal className="border-b border-mathua-division py-16">
       <div className="section-label">{tr("( 06 · Ranking System )")}</div>
@@ -304,36 +312,37 @@ export function RankingSection() {
 
 const FAQS = [
   {
-    q: tr("Do I need an account to start?"),
-    a: tr("No. Begin studying immediately, accounts are optional and only needed to sync progress across devices."),
+    q: "Do I need an account to start?",
+    a: "No. Begin studying immediately, accounts are optional and only needed to sync progress across devices.",
   },
   {
-    q: tr("Why does speed matter, not just accuracy?"),
-    a: tr("Response time helps estimate fluency alongside accuracy, difficulty and variety."),
+    q: "Why does speed matter, not just accuracy?",
+    a: "Response time helps estimate fluency alongside accuracy, difficulty and variety.",
   },
   {
-    q: tr("What happens every 50 XP?"),
-    a: tr("A mastery-check quiz verifies retention across your recent concepts before new material continues."),
+    q: "What happens every 50 XP?",
+    a: "A mastery-check quiz verifies retention across your recent concepts before new material continues.",
   },
   {
-    q: tr("Is Mathua free and open-source?"),
-    a: tr("Code and generators are available under MIT. Third-party lessons carry separate licenses listed on the licenses page."),
+    q: "Is Mathua free and open-source?",
+    a: "Code and generators are available under MIT. Third-party lessons carry separate licenses listed on the licenses page.",
   },
 ]
 
 export function FaqSection() {
+  useLocale()
   return (
     <section data-reveal className="grid gap-10 py-16 md:grid-cols-2">
       <div className="min-w-0">
         <div className="section-label">{tr("( 07 · Questions, answered. )")}</div>
         <div className="mt-5 divide-y divide-mathua-division border-y border-mathua-division">
           {FAQS.map(f => (
-            <details key={f.q} className="group py-3">
+            <details key={translatedLabel(f.q)} className="group py-3">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-serif text-[15px] text-mathua-primary">
-                <span>{f.q}</span>
+                <span>{translatedLabel(f.q)}</span>
                 <span className="font-mono text-mathua-muted transition-transform group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-2 text-[13px] leading-relaxed text-mathua-secondary">{f.a}</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-mathua-secondary">{translatedLabel(f.a)}</p>
             </details>
           ))}
         </div>

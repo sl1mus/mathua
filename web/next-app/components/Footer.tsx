@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from '../hooks/useLocale'
+
 import { tr, translatedLabel } from '../lib/i18n'
 
 import Link from 'next/link'
@@ -109,11 +111,11 @@ const headingClass = 'font-mono text-[10px] uppercase tracking-[0.2em] text-[var
 // and license for every source, so the line names them and "Licenses" links to /licenses, which
 // renders THIRD_PARTY_NOTICES.md in full.
 const CREDITS = [
-  tr("MIT License"),
-  tr("Avatars by DiceBear"),
-  tr("Lesson content: Algebrica (CC BY-NC 4.0)"),
-  tr("Lesson content: OpenStax (CC BY-NC-SA 4.0)"),
-  tr("Glossary: OpenStax, DLMF and others"),
+  "MIT License",
+  "Avatars by DiceBear",
+  "Lesson content: Algebrica (CC BY-NC 4.0)",
+  "Lesson content: OpenStax (CC BY-NC-SA 4.0)",
+  "Glossary: OpenStax, DLMF and others",
 ]
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -137,6 +139,7 @@ function useFooterArt(): FooterArt {
 }
 
 export default function Footer({ className = '' }: FooterProps) {
+  useLocale()
   const art = useFooterArt()
 
   return (

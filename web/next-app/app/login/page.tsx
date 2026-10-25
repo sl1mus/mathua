@@ -1,5 +1,8 @@
 'use client'
 
+import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { useLocale } from '../../hooks/useLocale'
+
 import Loading from '../../components/Loading'
 import { tr } from '../../lib/i18n'
 
@@ -188,6 +191,7 @@ function EyeIcon({ off }: { off?: boolean }) {
 }
 
 function LoginInner() {
+  useLocale()
   const { mounted } = useTheme()
   const { push, back } = useRouter()
   const searchParams = useSearchParams()
@@ -422,7 +426,8 @@ function LoginInner() {
 
       <div className="flex flex-col px-4 sm:px-6 lg:px-10 xl:px-16 pb-[env(safe-area-inset-bottom)] overflow-x-hidden min-w-0">
         <div className="flex-1 flex flex-col justify-center w-full max-w-md mx-auto py-10 lg:py-0 min-w-0">
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <LanguageSwitcher />
             <button
               type="button"
               onClick={goBack}

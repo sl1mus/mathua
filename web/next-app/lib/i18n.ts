@@ -1,6 +1,6 @@
-// Build-time locale keeps server rendering and hydration in agreement.
-// English remains the upstream default; the Family-DE build selects Russian.
-export const locale = process.env.NEXT_PUBLIC_LOCALE === 'ru' ? 'ru' : 'en'
+// The deployment locale is the hydration snapshot. User preference takes over after mount.
+import { defaultLocale, getLocale } from './locale'
+export const locale = defaultLocale
 
 const russian = {
   "at least 8 characters": "не менее 8 символов",
@@ -181,7 +181,7 @@ const russian = {
 } as const
 
 export function tr(message: keyof typeof russian): string {
-  return locale === 'ru' ? russian[message] : message
+  return getLocale() === 'ru' ? russian[message] : message
 }
 
 // Runtime labels can also come from API data or caller-provided navigation.
