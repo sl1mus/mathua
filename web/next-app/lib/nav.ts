@@ -1,3 +1,4 @@
+import { tr } from './i18n'
 export interface NavLink {
   label: string
   href: string
@@ -22,38 +23,38 @@ export type HeaderLink = NavLink
 
 // LEARN_LINKS is the doing group, and it is shown to everyone, a guest can
 // answer questions, they just cannot have them remembered.
-export const LEARN_LINKS: NavLink[] = [{ label: 'Learn', href: '/learn' }]
+export const LEARN_LINKS: NavLink[] = [{ label: tr("Learn"), href: '/learn' }]
 
 // REVIEW_LINKS is a Learn sub-mode: it grades, awards XP and reschedules
 // memory, so it belongs beside Learn rather than looking like its own product.
 // Auth-only, because /api/reviews/* sits behind authMiddleware, offering it to
 // a guest would be a link to a 401.
-export const REVIEW_LINKS: NavLink[] = [{ label: 'Review', href: '/review' }]
+export const REVIEW_LINKS: NavLink[] = [{ label: tr("Review"), href: '/review' }]
 
 // DISPLAY_LINKS is the orientation group: where things sit in the curriculum and where the
 // learner stands in it. None of these grade an answer.
 export const DISPLAY_LINKS: NavLink[] = [
-  { label: 'Graph', href: '/graph' },
+  { label: tr("Graph"), href: '/graph' },
   // Not a bottom tab on every surface, the tab bar stays at five, so /domains reaches mobile
   // through the tab bar and the compass overflow, derived from this list minus TAB_HREFS.
-  { label: 'Domains', href: '/domains' },
-  { label: 'Leaderboard', href: '/leaderboard' },
+  { label: tr("Domains"), href: '/domains' },
+  { label: tr("Leaderboard"), href: '/leaderboard' },
   // The mathematical glossary is a standalone reference: it grades nothing, tracks nothing
   // and gates nothing, so it sits with the orientation surfaces rather than beside Learn.
   // It reaches mobile through the compass overflow (it is not a bottom tab).
-  { label: 'Glossary', href: '/glossary' },
+  { label: tr("Glossary"), href: '/glossary' },
   // Reaching the person who runs this must not depend on finding an avatar menu.
   // /contact is not a bottom tab, so this one entry surfaces it in the desktop
   // row and in the mobile compass overflow.
-  { label: 'Contact', href: '/contact' },
+  { label: tr("Contact"), href: '/contact' },
 ]
 
 export const LOGGED_IN_LINKS: NavLink[] = [
-  { label: 'Profile', href: '/profile' },
-  { label: 'Settings', href: '/settings' },
+  { label: tr("Profile"), href: '/profile' },
+  { label: tr("Settings"), href: '/settings' },
 ]
 
-export const LOGGED_OUT_LINKS: NavLink[] = [{ label: 'Login', href: '/login' }]
+export const LOGGED_OUT_LINKS: NavLink[] = [{ label: tr("Login"), href: '/login' }]
 
 // ADMIN_LINKS is the administrative entry, offered only to staff (moderator, admin, owner).
 //
@@ -62,7 +63,7 @@ export const LOGGED_OUT_LINKS: NavLink[] = [{ label: 'Login', href: '/login' }]
 // administrator who used their phone had no route to administration at all except typing a URL.
 // Offering it grants nothing, every `/api/admin` route re-reads the role server-side
 // (ADR-048, ADR-049), so this is the invitation the server was always the authority for.
-export const ADMIN_LINKS: NavLink[] = [{ label: 'Admin', href: '/admin' }]
+export const ADMIN_LINKS: NavLink[] = [{ label: tr("Admin"), href: '/admin' }]
 
 // Hrefs covered by the bottom tabs, never repeated in the compass menu.
 // Review is deliberately absent: the tab bar stays at five, and Review reaches

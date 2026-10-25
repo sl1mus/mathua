@@ -1,5 +1,7 @@
 'use client'
 
+import { tr } from '../lib/i18n'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
@@ -16,11 +18,11 @@ import Avatar from './Avatar'
 // question, so it leads; Domains holds the orientation slot that the closed
 // Study route used to occupy. Order is mirrored in lib/nav.ts.
 const TABS: { label: string; href: string; icon: IconComponent }[] = [
-  { label: 'Home', href: '/', icon: House },
-  { label: 'Learn', href: '/learn', icon: Play },
-  { label: 'Domains', href: '/domains', icon: Layers },
-  { label: 'Profile', href: '/profile', icon: User },
-  { label: 'Graph', href: '/graph', icon: Network },
+  { label: tr("Home"), href: '/', icon: House },
+  { label: tr("Learn"), href: '/learn', icon: Play },
+  { label: tr("Domains"), href: '/domains', icon: Layers },
+  { label: tr("Profile"), href: '/profile', icon: User },
+  { label: tr("Graph"), href: '/graph', icon: Network },
 ]
 
 export default function BottomTabs() {
@@ -62,7 +64,7 @@ export default function BottomTabs() {
   return (
     <nav
       ref={navRef}
-      aria-label="Primary"
+      aria-label={tr("Primary")}
       data-chrome-part="tabs"
       className={`lg:hidden fixed inset-x-3 z-40 flex h-[56px] border-[0.5px] border-mathua-border bg-mathua-surface shadow-none transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none ${
         hidden ? 'translate-y-[calc(100%+20px)] opacity-0' : 'translate-y-0 opacity-100'

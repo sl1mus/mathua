@@ -1,5 +1,7 @@
 'use client'
 
+import { tr, translatedLabel } from '../lib/i18n'
+
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
@@ -173,7 +175,7 @@ export default function Header({ links }: HeaderProps) {
                   rather than being a decoration nobody can date. */}
               <span
                 className="border border-mathua-border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-mathua-muted leading-none"
-                title="Mathua is in beta: the curriculum, the app and its fixes are still moving."
+                title={tr("Mathua is in beta: the curriculum, the app and its fixes are still moving.")}
               >
                 beta
               </span>
@@ -189,7 +191,7 @@ export default function Header({ links }: HeaderProps) {
                     href={link.href}
                     className="link-underline font-mono text-xs text-mathua-muted hover:text-mathua-blue whitespace-nowrap transition-colors"
                   >
-                    {link.label}
+                    {translatedLabel(link.label)}
                   </Link>
                 </span>
               ))}
@@ -212,7 +214,7 @@ export default function Header({ links }: HeaderProps) {
               <button
                 type="button"
                 onClick={handleThemeToggle}
-                aria-label="Toggle theme"
+                aria-label={tr("Toggle theme")}
                 className="flex items-center justify-center min-h-[44px] min-w-[44px] text-mathua-muted bg-transparent border-none cursor-pointer hover:text-mathua-blue transition-colors"
               >
                 <SunMoon ref={sunMoonRef} size={15} isAnimated={false} />
@@ -224,7 +226,7 @@ export default function Header({ links }: HeaderProps) {
                 <button
                   type="button"
                   onClick={toggleNav}
-                  aria-label="Open navigation menu"
+                  aria-label={tr("Open navigation menu")}
                   aria-expanded={navOpen}
                   aria-haspopup="menu"
                   className="flex items-center justify-center min-h-[44px] min-w-[44px] text-mathua-muted bg-transparent border-none cursor-pointer hover:text-mathua-blue transition-colors"
@@ -237,7 +239,7 @@ export default function Header({ links }: HeaderProps) {
                 <button
                   type="button"
                   onClick={() => setOpen(o => !o)}
-                  aria-label="Open profile menu"
+                  aria-label={tr("Open profile menu")}
                   aria-expanded={open}
                   aria-haspopup="menu"
                   className="rounded-full p-0.5 border border-transparent hover:border-mathua-border focus:outline-none focus:border-mathua-blue transition-colors"
@@ -268,7 +270,7 @@ export default function Header({ links }: HeaderProps) {
                   <div className="absolute inset-y-0 left-1/2 w-full max-w-container -translate-x-1/2 pointer-events-none">
                     <div
                       role="menu"
-                      aria-label="Site navigation"
+                      aria-label={tr("Site navigation")}
                       ref={navPanelRef}
                       className="pointer-events-auto absolute right-4 md:right-6 top-full min-w-[200px] bg-mathua-surface border border-mathua-border shadow-lg py-1 z-50 md:hidden"
                     >
@@ -285,7 +287,7 @@ export default function Header({ links }: HeaderProps) {
                               active ? 'text-mathua-blue' : 'text-mathua-muted hover:text-mathua-blue hover:bg-mathua-surface-elevated'
                             }`}
                           >
-                            {link.label}
+                            {translatedLabel(link.label)}
                           </Link>
                         )
                       })}
@@ -327,7 +329,7 @@ export default function Header({ links }: HeaderProps) {
         <div
           ref={menuPanelRef}
           role="menu"
-          aria-label="Profile"
+          aria-label={tr("Profile")}
           className="pointer-events-auto absolute right-4 md:right-6 top-full min-w-[160px] bg-mathua-surface border border-mathua-border shadow-lg py-1 z-50"
         >
           <div className="px-3 py-2 border-b border-mathua-border">
@@ -343,7 +345,7 @@ export default function Header({ links }: HeaderProps) {
             }}
             className="w-full text-left px-3 py-2 font-mono text-xs text-mathua-muted hover:text-mathua-blue hover:bg-mathua-surface-elevated transition-colors"
           >
-            Profile
+            {tr("Profile")}
           </button>
           <button
             type="button"
@@ -354,7 +356,7 @@ export default function Header({ links }: HeaderProps) {
             }}
             className="w-full text-left px-3 py-2 font-mono text-xs text-mathua-muted hover:text-mathua-blue hover:bg-mathua-surface-elevated transition-colors"
           >
-            Contact
+            {tr("Contact")}
           </button>
           <button
             type="button"
@@ -366,7 +368,7 @@ export default function Header({ links }: HeaderProps) {
             }}
             className="w-full text-left px-3 py-2 font-mono text-xs text-mathua-muted hover:text-mathua-red hover:bg-mathua-surface-elevated transition-colors"
           >
-            Sign out
+            {tr("Sign out")}
           </button>
         </div>
         </div>

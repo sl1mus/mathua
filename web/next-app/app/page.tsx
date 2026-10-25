@@ -1,5 +1,7 @@
 'use client'
 
+import { tr } from '../lib/i18n'
+
 import { useRouter } from 'next/navigation'
 import { useTheme } from '../hooks/useTheme'
 import { ensureGuestId, ensureGuestToken } from '../lib/auth'
@@ -50,7 +52,7 @@ export default function HomePage() {
           because a marketing page wants Docs and How it works inline. Learn is
           still listed first: the primary destination of the product should not
           vanish on the page that introduces it. */}
-      <Header links={[{ label: 'Learn', href: '/learn' }, { label: 'How it works', href: '/how-it-works' }, { label: 'Docs', href: '/docs' }, { label: 'Note', href: '/note' }, { label: 'Leaderboard', href: '/leaderboard' }, { label: 'Login', href: '/login' }]} />
+      <Header links={[{ label: tr("Learn"), href: '/learn' }, { label: tr("How it works"), href: '/how-it-works' }, { label: tr("Docs"), href: '/docs' }, { label: tr("Note"), href: '/note' }, { label: tr("Leaderboard"), href: '/leaderboard' }, { label: tr("Login"), href: '/login' }]} />
       <main className="max-w-container mx-auto px-4 sm:px-6 overflow-x-clip min-w-0">
         <HeroSection onGetStarted={handleGetStarted} />
         <TrustSection />

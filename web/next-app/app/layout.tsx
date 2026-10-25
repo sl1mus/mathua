@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { locale } from '../lib/i18n'
 import Script from 'next/script'
 import localFont from 'next/font/local'
 import { Toaster } from '@/components/ui/sonner'
@@ -79,7 +80,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
         <meta name="color-scheme" content="dark light" />
         {/* KaTeX builds some glyphs (≠, ≤, overlays) from private-use codepoints
